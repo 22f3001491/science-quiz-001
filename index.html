@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Quiz</title>
+    <style>
+        /* Basic Reset & Body Styling */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6; /* Light gray background */
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top initially for better scroll behavior */
+            min-height: 100vh;
+            padding: 20px; /* Padding around the quiz container */
+        }
+
+        /* Main Quiz Container */
+        .quiz-container {
+            background-color: #ffffff; /* White card background */
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            padding: 30px;
+            width: 100%;
+            max-width: 600px; /* Max width for larger screens */
+            margin-top: 50px; /* Space from top */
+            text-align: center;
+        }
+
+        /* Header */
+        h1 {
+            color: #2c3e50; /* Dark blue heading */
+            margin-bottom: 25px;
+            font-size: 2.2em;
+            font-weight: 700;
+        }
+
+        /* Question Text */
+        #question-text {
+            font-size: 1.4em;
+            margin-bottom: 30px;
+            color: #34495e; /* Slightly lighter dark blue */
+            min-height: 60px; /* Ensure consistent height for questions */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: left; /* Align question text to left */
+            padding: 0 15px; /* Padding for text inside */
+        }
+
+        /* Options Container */
+        #options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Space between option buttons */
+            margin-bottom: 30px;
+        }
+
+        /* Option Buttons */
+        .option-btn {
+            background-color: #ecf0f1; /* Light gray button */
+            color: #34495e;
+            border: 2px solid #bdc3c7; /* Slightly darker border */
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease; /* Smooth transitions */
+            text-align: left;
+            width: 100%; /* Full width */
+            outline: none; /* Remove outline on focus */
+        }
+
+        .option-btn:hover:not(.correct-answer):not(.incorrect-answer):not(:disabled) {
+            background-color: #dfe6e9; /* Lighter hover */
+            border-color: #95a5a6;
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8; /* Slightly faded when disabled */
+        }
+
+        /* Feedback Colors */
+        .correct-answer {
+            background-color: #2ecc71; /* Green */
+            color: #ffffff;
+            border-color: #27ae60;
+            font-weight: 600;
+        }
+
+        .incorrect-answer {
+            background-color: #e74c3c; /* Red */
+            color: #ffffff;
+            border-color: #c0392b;
+            font-weight: 600;
+        }
+
+        /* Next Button */
+        #next-btn {
+            background-color: #3498db; /* Blue */
+            color: #ffffff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            max-width: 200px; /* Constrain width */
+            margin-top: 20px;
+            outline: none;
+        }
+
+        #next-btn:hover:not(:disabled) {
+            background-color: #2980b9; /* Darker blue hover */
+        }
+        
+        #next-btn:disabled {
+            background-color: #95a5a6; /* Gray when disabled */
+            cursor: not-allowed;
+        }
+
+        /* Score Container */
+        #score-container {
+            font-size: 1.6em;
+            color: #2c3e50;
+            margin-top: 30px;
+            display: none; /* Hidden by default */
+        }
+
+        #score-container p {
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        #restart-btn {
+            background-color: #f39c12; /* Orange for restart */
+            color: #ffffff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            outline: none;
+        }
+
+        #restart-btn:hover {
+            background-color: #e67e22; /* Darker orange hover */
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            .quiz-container {
+                margin-top: 20px;
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+                margin-bottom: 20px;
+            }
+
+            #question-text {
+                font-size: 1.2em;
+                margin-bottom: 25px;
+            }
+
+            .option-btn {
+                padding: 12px 15px;
+                font-size: 1em;
+            }
+
+            #next-btn, #restart-btn {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .quiz-container {
+                margin-top: 10px;
+                padding: 15px;
+                border-radius: 8px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+            }
+
+            #question-text {
+                font-size: 1.1em;
+                margin-bottom: 20px;
+                min-height: 50px; /* Adjust min-height for smaller screens */
+            }
+
+            .option-btn {
+                font-size: 0.95em;
+                padding: 10px 12px;
+            }
+
+            #options-container {
+                gap: 10px; /* Smaller gap on mobile */
+            }
+
+            #next-btn, #restart-btn {
+                padding: 8px 15px;
+                font-size: 0.95em;
+                max-width: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1>Physics Quiz</h1>
+        
+        <div id="question-area">
+            <p id="question-text">Loading question...</p>
+            <div id="options-container">
+                <!-- Options will be inserted here by JavaScript -->
+            </div>
+            <button id="next-btn" disabled>Next Question</button>
+        </div>
+        
+        <div id="score-container" style="display: none;">
+            <p>You scored <span id="final-score">0</span> out of <span id="total-questions"></span>!</p>
+            <button id="restart-btn">Restart Quiz</button>
+        </div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "Which force pulls objects towards the center of the Earth?",
+                options: ["Friction", "Magnetism", "Gravity", "Tension"],
+                correctAnswerIndex: 2
+            },
+            {
+                question: "What is the formula for calculating speed?",
+                options: ["Mass x Acceleration", "Distance / Time", "Force x Distance", "Energy / Time"],
+                correctAnswerIndex: 1
+            },
+            {
+                question: "What type of energy is stored in an object due to its position or state?",
+                options: ["Kinetic Energy", "Thermal Energy", "Potential Energy", "Chemical Energy"],
+                correctAnswerIndex: 2
+            },
+            {
+                question: "According to Newton's Second Law of Motion, what is the relationship between force, mass, and acceleration?",
+                options: ["Force = Mass / Acceleration", "Force = Mass x Acceleration", "Force = Acceleration / Mass", "Force = Work / Time"],
+                correctAnswerIndex: 1
+            },
+            {
+                question: "Which of Newton's Laws states that for every action, there is an equal and opposite reaction?",
+                options: ["First Law", "Second Law", "Third Law", "Law of Universal Gravitation"],
+                correctAnswerIndex: 2
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let quizActive = true; // Flag to prevent multiple selections for a single question
+
+        // Get DOM elements
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const nextButton = document.getElementById('next-btn');
+        const questionArea = document.getElementById('question-area');
+        const scoreContainer = document.getElementById('score-container');
+        const finalScoreSpan = document.getElementById('final-score');
+        const totalQuestionsSpan = document.getElementById('total-questions');
+        const restartButton = document.getElementById('restart-btn');
+
+        // Event Listeners
+        nextButton.addEventListener('click', handleNextButtonClick);
+        restartButton.addEventListener('click', restartQuiz);
+
+        /**
+         * Displays the current question and its options, or shows the final score.
+         */
+        function displayQuestion() {
+            // Reset UI state for a new question
+            quizActive = true;
+            nextButton.disabled = true; // Next button is disabled until an answer is selected
+            optionsContainer.innerHTML = ''; // Clear previous options
+            
+            scoreContainer.style.display = 'none'; // Ensure score container is hidden
+            questionArea.style.display = 'block'; // Ensure question area is visible
+
+            if (currentQuestionIndex < quizData.length) {
+                const question = quizData[currentQuestionIndex];
+                questionText.textContent = `${currentQuestionIndex + 1}. ${question.question}`;
+
+                question.options.forEach((option, index) => {
+                    const button = document.createElement('button');
+                    button.classList.add('option-btn');
+                    button.textContent = option;
+                    button.dataset.index = index; // Store original index for reference
+                    button.addEventListener('click', () => handleAnswerClick(button, index));
+                    optionsContainer.appendChild(button);
+                });
+            } else {
+                // All questions answered, show final score
+                showFinalScore();
+            }
+        }
+
+        /**
+         * Handles the user's answer selection, provides visual feedback, and updates score.
+         * @param {HTMLButtonElement} selectedButton - The button element that was clicked.
+         * @param {number} selectedIndex - The index of the selected answer option.
+         */
+        function handleAnswerClick(selectedButton, selectedIndex) {
+            if (!quizActive) return; // Prevent multiple selections for the same question
+
+            quizActive = false; // Disable further selections for this question
+            nextButton.disabled = false; // Enable the "Next Question" button
+
+            const correctAnswerIndex = quizData[currentQuestionIndex].correctAnswerIndex;
+            const optionButtons = optionsContainer.querySelectorAll('.option-btn');
+
+            // Apply 'correct-answer' class to the correct option and disable all options
+            optionButtons.forEach(button => {
+                button.disabled = true; // Disable all options after user makes a choice
+                if (parseInt(button.dataset.index) === correctAnswerIndex) {
+                    button.classList.add('correct-answer');
+                }
+            });
+
+            // If the selected answer is incorrect, apply 'incorrect-answer' class
+            if (selectedIndex === correctAnswerIndex) {
+                score++; // Increment score only if correct
+            } else {
+                selectedButton.classList.add('incorrect-answer');
+            }
+        }
+
+        /**
+         * Moves to the next question or shows the final score if the quiz is complete.
+         */
+        function handleNextButtonClick() {
+            currentQuestionIndex++;
+            displayQuestion();
+        }
+
+        /**
+         * Hides the question area and displays the final score.
+         */
+        function showFinalScore() {
+            questionArea.style.display = 'none'; // Hide current question
+            scoreContainer.style.display = 'block'; // Show score container
+            finalScoreSpan.textContent = score;
+            totalQuestionsSpan.textContent = quizData.length;
+        }
+
+        /**
+         * Resets the quiz to its initial state and displays the first question.
+         */
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            displayQuestion();
+        }
+
+        // Initialize the quiz when the script loads
+        displayQuestion();
+    </script>
+</body>
+</html>
